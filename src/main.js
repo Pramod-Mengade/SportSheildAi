@@ -1338,7 +1338,18 @@ window.render = function render(){
    BOOTSTRAP
 ═══════════════════════════════════════════════ */
 auth.onAuthStateChanged(async user=>{
-  if(user){CU=user;await loadData();}
-  else if(!CU) {}
-  render();
+  if(user){
+    CU=user;
+    render(); // Render immediately so user sees the dashboard
+    try {
+      await loadData();
+      render(); // Re-render with fetched data
+    } catch(e) {
+      console.warn("Data load error:", e);
+    }
+  }
+  else {
+    CU=null;
+    render();
+  }
 });
