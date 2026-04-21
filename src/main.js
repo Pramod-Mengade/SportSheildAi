@@ -67,9 +67,9 @@ window.notify = function notify(msg,type='info'){
 ═══════════════════════════════════════════════ */
 const COL={assets:'md_assets',scans:'md_scans',alerts:'md_alerts'};
 
-const dbSet  = (col,id,data) => db.collection(col).doc(id).set(data).catch(()=>localStorage.setItem(`${col}_${id}`,JSON.stringify(data)));
-const dbGet  = async (col,uid) => { try{ const s=await db.collection(col).where('uid','==',uid).orderBy('createdAt','desc').get(); return s.docs.map(d=>d.data()); }catch{ return Object.keys(localStorage).filter(k=>k.startsWith(col+'_')).map(k=>{try{return JSON.parse(localStorage.getItem(k));}catch{return null;}}).filter(Boolean); }};
-const dbAll  = async (col) => { try{ const s=await db.collection(col).orderBy('createdAt','desc').limit(300).get(); return s.docs.map(d=>d.data()); }catch{ return Object.keys(localStorage).filter(k=>k.startsWith(col+'_')).map(k=>{try{return JSON.parse(localStorage.getItem(k));}catch{return null;}}).filter(Boolean); }};
+const dbSet  = async (col,id,data) => { if(CU && CU.uid==='demo_user'){ localStorage.setItem(`${col}_${id}`,JSON.stringify(data)); return; } try{ await db.collection(col).doc(id).set(data); }catch{ localStorage.setItem(`${col}_${id}`,JSON.stringify(data)); }};
+const dbGet  = async (col,uid) => { if(CU && CU.uid==='demo_user'){ return Object.keys(localStorage).filter(k=>k.startsWith(col+'_')).map(k=>{try{return JSON.parse(localStorage.getItem(k));}catch{return null;}}).filter(Boolean).filter(d=>d.uid===uid).sort((a,b)=>b.createdAt-a.createdAt); } try{ const s=await db.collection(col).where('uid','==',uid).orderBy('createdAt','desc').get(); return s.docs.map(d=>d.data()); }catch{ return Object.keys(localStorage).filter(k=>k.startsWith(col+'_')).map(k=>{try{return JSON.parse(localStorage.getItem(k));}catch{return null;}}).filter(Boolean).filter(d=>d.uid===uid).sort((a,b)=>b.createdAt-a.createdAt); }};
+const dbAll  = async (col) => { if(CU && CU.uid==='demo_user'){ return Object.keys(localStorage).filter(k=>k.startsWith(col+'_')).map(k=>{try{return JSON.parse(localStorage.getItem(k));}catch{return null;}}).filter(Boolean).sort((a,b)=>b.createdAt-a.createdAt); } try{ const s=await db.collection(col).orderBy('createdAt','desc').limit(300).get(); return s.docs.map(d=>d.data()); }catch{ return Object.keys(localStorage).filter(k=>k.startsWith(col+'_')).map(k=>{try{return JSON.parse(localStorage.getItem(k));}catch{return null;}}).filter(Boolean).sort((a,b)=>b.createdAt-a.createdAt); }};
 
 window.uploadFile = async function uploadFile(file,path,onProg){
   return new Promise((res,rej)=>{
