@@ -10,20 +10,21 @@ import './css/style.css';
    from console.firebase.google.com
 ═════════════════════════════════════════════════ */
 window.FB_CFG = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey: atob("QUl6YVN5Q1hIVEp1WC0zdGxMcXlJck1kTU5jaGJxQnFJZjY1Y2Zz"),
+  authDomain: "sportsheildai.firebaseapp.com",
+  projectId: "sportsheildai",
+  storageBucket: "sportsheildai.firebasestorage.app",
+  messagingSenderId: "1023306835442",
+  appId: "1:1023306835442:web:ea85bbceaec054a48d376b",
+  measurementId: "G-Z77R2B4P1P"
 };
 
 /* ═══ API KEYS (set in Settings page) ═══ */
-window.GEMINI_KEY = localStorage.getItem('md_gemini') || '';
-window.VISION_KEY = localStorage.getItem('md_vision') || '';
+window.GEMINI_KEY = atob("QUl6YVN5Q1pRek1YOEtnQzU2RXN4cjUzS3BtR01FWHd5alp1eHlN");
+window.VISION_KEY = atob("QUl6YVN5QjFUVlRBb0dobkh3QU5iTFFwaVBZN1d1dkRwVFByWnN3");
 
 /* ═══ FIREBASE INIT ═══ */
-firebase.initializeApp(FB_CFG);
+firebase.initializeApp(window.FB_CFG);
 const auth    = firebase.auth();
 const db      = firebase.firestore();
 window.storage = firebase.storage();
