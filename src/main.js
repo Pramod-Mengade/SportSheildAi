@@ -19,9 +19,9 @@ window.FB_CFG = {
   measurementId: "G-Z77R2B4P1P"
 };
 
-/* ═══ API KEYS (set in Settings page) ═══ */
-window.GEMINI_KEY = atob("QUl6YVN5Q1pRek1YOEtnQzU2RXN4cjUzS3BtR01FWHd5alp1eHlN");
-window.VISION_KEY = atob("QUl6YVN5QjFUVlRBb0dobkh3QU5iTFFwaVBZN1d1dkRwVFByWnN3");
+/* ═══ API KEYS ═══ */
+window.GEMINI_KEY = import.meta.env.VITE_GEMINI_KEY || localStorage.getItem('md_gemini') || '';
+window.VISION_KEY = import.meta.env.VITE_VISION_KEY || localStorage.getItem('md_vision') || '';
 
 /* ═══ FIREBASE INIT ═══ */
 firebase.initializeApp(window.FB_CFG);
@@ -1303,8 +1303,13 @@ window.markAllRead = async function markAllRead(){
    AUTH
 ═══════════════════════════════════════════════ */
 window.signInGoogle = async function signInGoogle(){
-  try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());}
-  catch(e){notify('Sign-in failed: '+e.message,'error');}
+  try {
+    await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  } catch(e) {
+    console.warn("Firebase Auth Error:", e.message);
+    notify('Firebase Sign-In failed. Auto-switching to Demo Mode...', 'warn');
+    setTimeout(() => signInDemo(), 1500);
+  }
 }
 window.signInDemo = async function signInDemo(){
   CU={uid:'demo_user',displayName:'Demo User',email:'demo@mediadna.ai',photoURL:''};
