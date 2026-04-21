@@ -19,9 +19,10 @@ window.FB_CFG = {
   measurementId: "G-Z77R2B4P1P"
 };
 
-/* ═══ API KEYS ═══ */
-window.GEMINI_KEY = import.meta.env.VITE_GEMINI_KEY || localStorage.getItem('md_gemini') || '';
-window.VISION_KEY = import.meta.env.VITE_VISION_KEY || localStorage.getItem('md_vision') || '';
+/* ═══ API KEYS (Now Secured on Backend) ═══ */
+// Keys are no longer exposed in the browser.
+window.GEMINI_KEY = true; // Flag for UI logic
+window.VISION_KEY = true; // Flag for UI logic
 
 /* ═══ FIREBASE INIT ═══ */
 firebase.initializeApp(window.FB_CFG);
@@ -204,11 +205,10 @@ window.hammingDist = function hammingDist(h1,h2){
    Intelligence engine for all AI features
 ═══════════════════════════════════════════════ */
 window.callGemini = async function callGemini(parts, maxTokens=800){
-  if(!GEMINI_KEY) return null;
   try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,{
+    const r=await fetch(`/api/gemini`,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts}],generationConfig:{temperature:0.1,maxOutputTokens:maxTokens}})
+      body:JSON.stringify({parts, maxTokens})
     });
     const d=await r.json();
     if(d.error)return null;
@@ -257,12 +257,10 @@ window.geminiAnomalyAnalysis = async function geminiAnomalyAnalysis(asset, finds
    Scans entire internet for copies of the image
 ═══════════════════════════════════════════════ */
 window.visionWebDetect = async function visionWebDetect(b64,mime){
-  const key=VISION_KEY||GEMINI_KEY;
-  if(!key) return null;
   try{
-    const r=await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${key}`,{
+    const r=await fetch(`/api/vision`,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({requests:[{image:{content:b64},features:[{type:'WEB_DETECTION',maxResults:15}]}]})
+      body:JSON.stringify({b64, mime})
     });
     const d=await r.json();
     if(d.error||d.responses?.[0]?.error) return null;
