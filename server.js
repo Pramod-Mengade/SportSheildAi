@@ -33,6 +33,7 @@ app.get('/api/health', (req, res) => {
 // Secure API Proxy for Gemini
 app.post('/api/gemini', async (req, res) => {
   const { parts, maxTokens } = req.body;
+<<<<<<< HEAD
   console.log('[DEBUG] Gemini Key Exists:', !!process.env.GEMINI_API_KEY);
   
   if (!process.env.GEMINI_API_KEY) {
@@ -41,6 +42,14 @@ app.post('/api/gemini', async (req, res) => {
 
   try {
     const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+=======
+  if (!process.env.GEMINI_API_KEY) {
+    return res.status(500).json({ error: 'GEMINI_API_KEY is not configured on the server.' });
+  }
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+>>>>>>> c3e3017 (changes added)
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -114,6 +123,7 @@ app.post('/api/vision', async (req, res) => {
     }
     res.json(data);
   } catch (error) {
+<<<<<<< HEAD
     clearTimeout(timeout);
     if (error.name === 'AbortError') {
       console.error('Vision API timeout');
@@ -147,6 +157,13 @@ app.get('/api/proxy-image', async (req, res) => {
   }
 });
 
+=======
+    console.error('Vision Error:', error);
+    res.status(500).json({ error: 'Failed to communicate with Vision API' });
+  }
+});
+
+>>>>>>> c3e3017 (changes added)
 // FEATURE 1: Self-reporting beacon
 const beaconHits = [];
 app.get('/beacon/:assetId', (req, res) => {
@@ -167,21 +184,31 @@ app.get('/api/beacons', (req, res) => {
 
 // FEATURE 2: Match-Day surge mode cache
 let currentMatches = [];
+<<<<<<< HEAD
 let lastFetch = 0;
 let nextMatchStart = null;
 app.get('/api/match-day', async (req, res) => {
   const now = Date.now();
   // Refresh cache if empty OR older than 1 hour
   if (currentMatches.length === 0 || (now - lastFetch) > 3600000) {
+=======
+let nextMatchStart = null;
+app.get('/api/match-day', async (req, res) => {
+  if (currentMatches.length === 0) {
+>>>>>>> c3e3017 (changes added)
     try {
       const key = process.env.CRICAPI_KEY;
       if (key) {
         const resp = await fetch(`https://api.cricapi.com/v1/currentMatches?apikey=${key}&offset=0`);
         const data = await resp.json();
+<<<<<<< HEAD
         if (data && data.data) {
           currentMatches = data.data;
           lastFetch = Date.now();
         }
+=======
+        if (data && data.data) currentMatches = data.data;
+>>>>>>> c3e3017 (changes added)
       } else {
         // Mock match for demo purposes
         currentMatches = [
@@ -193,6 +220,10 @@ app.get('/api/match-day', async (req, res) => {
     }
   }
   
+<<<<<<< HEAD
+=======
+  const now = Date.now();
+>>>>>>> c3e3017 (changes added)
   let nextMatch = null;
   for (const m of currentMatches) {
     const t = new Date(m.dateTimeGMT).getTime();

@@ -280,6 +280,7 @@ window.geminiAnomalyAnalysis = async function geminiAnomalyAnalysis(asset, finds
    LAYER 4 — GOOGLE CLOUD VISION WEB DETECTION
    Scans entire internet for copies of the image
 ═══════════════════════════════════════════════ */
+<<<<<<< HEAD
 window.visionWebDetect = async function visionWebDetect(b64,mime, signal){
   try {
     const r=await fetch(`/api/vision`,{
@@ -300,6 +301,17 @@ window.visionWebDetect = async function visionWebDetect(b64,mime, signal){
     if(e.name === 'AbortError') throw new Error('Vision scan timed out');
     throw new Error(e.message || 'Vision API request failed');
   }
+=======
+window.visionWebDetect = async function visionWebDetect(b64,mime){
+  const r=await fetch(`/api/vision`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({b64, mime})
+  });
+  const d=await r.json();
+  if(d.error) throw new Error(d.error.message || d.error);
+  if(d.responses?.[0]?.error) throw new Error(d.responses[0].error.message);
+  return d.responses?.[0]?.webDetection||null;
+>>>>>>> c3e3017 (changes added)
 }
 
 /* ═══════════════════════════════════════════════
@@ -492,14 +504,21 @@ window.DashboardPage = function DashboardPage(){
     <div class="topbar-left">
       <h1>Dashboard</h1>
       <p>Welcome back, ${CU.displayName.split(' ')[0]}</p>
+<<<<<<< HEAD
     </div>
     <div style="display:flex; gap:10px">
       <button class="btn btn-ghost" onclick="go('settings')">⚙️ System Health</button>
       <button class="btn btn-cyan" onclick="go('protect')">+ Protect Asset</button>
+=======
+>>>>>>> c3e3017 (changes added)
     </div>
+    <button class="btn btn-cyan" onclick="go('protect')">+ Protect Asset</button>
   </div>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> c3e3017 (changes added)
   ${isMatchDayActive ? `
   <div style="background:rgba(255,179,0,.15); border:1px solid rgba(255,179,0,.3); border-radius:10px; padding:14px; margin-bottom:18px; display:flex; align-items:center; gap:12px">
     <div style="font-size:24px">⚠️</div>
@@ -1073,6 +1092,7 @@ window.doProtect = async function doProtect(){
     const allAnomalies=[...localAnomalies,...(aiAnomalies?.anomalies||[])];
     
     const evidence=generateEvidencePackage(asset,webFinds,allAnomalies);
+<<<<<<< HEAD
 
     // Store b64 thumbnail so scans work after blob: URL expires (demo/offline mode)
     let b64Thumb=null; let mimeType=file.type||'image/jpeg';
@@ -1090,6 +1110,10 @@ window.doProtect = async function doProtect(){
 
     const fullAsset={...asset,type:file.type.startsWith('video/')?'video':'image',fileName:file.name,fileSize:file.size,originalUrl:origUrl,dnaEmbedded,fingerprint:fp,commercialValue:val,source:src,b64Thumb,mimeType};
 
+=======
+    const fullAsset={...asset,type:file.type.startsWith('video/')?'video':'image',fileName:file.name,fileSize:file.size,originalUrl:origUrl,dnaEmbedded,fingerprint:fp,commercialValue:val,source:src};
+
+>>>>>>> c3e3017 (changes added)
     const scanRec={id:uid(),uid:CU.uid,assetId:id,assetTitle:title,organization:org,finds:webFinds,totalFound:webFinds.length,unauthorizedCount:webFinds.filter(f=>f.verdict==='UNAUTHORIZED').length,suspiciousCount:webFinds.filter(f=>f.verdict==='SUSPICIOUS').length,anomalies:allAnomalies,evidence,createdAt:Date.now(),scanMode:'vision'};
 
     await dbSet(COL.assets,id,fullAsset);
@@ -1116,7 +1140,11 @@ window.doProtect = async function doProtect(){
 
 /* ══ INTERNET SCAN (standalone) ══ */
 window.doInternetScan = async function doInternetScan(){
+<<<<<<< HEAD
   // Detect demo mode: either URL param OR asset was saved with a blob: URL (demo/offline)
+=======
+  const isDemo = window.location.search.includes('demo=true');
+>>>>>>> c3e3017 (changes added)
   const assetId=$('scan-sel')?.value;
   if(!assetId){notify('Select an asset','error');return;}
   const asset=_assets.find(a=>a.id===assetId);
@@ -1162,6 +1190,7 @@ window.doInternetScan = async function doInternetScan(){
 
     // STEP 1+2: Vision scan
     let webFinds=[]; let scanMode='gemini-fallback';
+<<<<<<< HEAD
 
     if(isDemo || !backendOk){
       // BUG FIX #3: Demo mode — return realistic mock data instead of failing fetch
@@ -1203,6 +1232,23 @@ window.doInternetScan = async function doInternetScan(){
         
         const wd=await visionWebDetect(b64, mimeType, controller.signal);
         clearTimeout(scanTimeout);
+=======
+    if(isDemo){
+      showStep(1); await new Promise(r=>setTimeout(r,500));
+      scanMode='vision';
+      webFinds = [
+        {url:'https://example-sportsblog.com/ipl-photo',domain:'example-sportsblog.com',similarity:98,type:'EXACT_COPY',verdict:'UNAUTHORIZED',legalRisk:'HIGH',detectedAt:Date.now()},
+        {url:'https://socialmedia-repost.net/virat-2024',domain:'socialmedia-repost.net',similarity:85,type:'PARTIAL_COPY',verdict:'UNAUTHORIZED',legalRisk:'MEDIUM',detectedAt:Date.now()}
+      ];
+    } else if(asset.downloadUrl && (VISION_KEY||GEMINI_KEY)){
+      try{
+        showStep(1); await new Promise(r=>setTimeout(r,500));
+        const resp=await fetch(asset.downloadUrl);
+        const blob=await resp.blob();
+        const rd=new FileReader();
+        const b64=await new Promise(r=>{rd.onload=e=>r(e.target.result.split(',')[1]);rd.readAsDataURL(blob);});
+        const wd=await visionWebDetect(b64,blob.type||'image/jpeg');
+>>>>>>> c3e3017 (changes added)
         scanMode='vision';
         if(wd){
           for(const img of (wd.fullMatchingImages||[]).slice(0,8)){
@@ -1216,6 +1262,7 @@ window.doInternetScan = async function doInternetScan(){
           }
         }
       }catch(e){
+<<<<<<< HEAD
         // Swallow Vision error, fall through to Gemini fallback
         notify('Vision API: '+e.message+' — Activating Gemini AI fallback.', 'warn');
         scanMode='gemini-fallback';
@@ -1224,6 +1271,15 @@ window.doInternetScan = async function doInternetScan(){
 
     // BUG FIX #5: Gemini fallback — use stored b64Thumb if available, else text-only prompt
     if(webFinds.length===0 && scanMode==='gemini-fallback'){
+=======
+        if(btn) btn.disabled=false;
+        notify('Vision API Error: '+e.message,'error');
+        throw e;
+      }
+    }
+    // Gemini fallback if Vision fails and scanMode is still gemini-fallback
+    if(webFinds.length===0 && scanMode==='gemini-fallback' && GEMINI_KEY){
+>>>>>>> c3e3017 (changes added)
       try{
         showStep(1); await new Promise(r=>setTimeout(r,400));
         let raw = null;

@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 # 🧬 MediaDNA AI — SportShield
 ### *Advanced Digital Sports Media Protection & IP Tracking*
+=======
+# MediaDNA AI — SportShield 🧬
+>>>>>>> c3e3017 (changes added)
 
 MediaDNA AI is a production-ready prototype designed to solve the multi-billion dollar problem of sports media piracy. It combines **invisible steganography**, **perceptual fingerprinting**, and **Multi-Agent AI** to detect, track, and flag unauthorized content across the global internet in real-time.
 
@@ -51,6 +55,7 @@ MediaDNA-AI/
 2. Create `.env` with `GEMINI_API_KEY` and `GOOGLE_VISION_API_KEY`.
 3. `npm run dev` (Starts both Vite and Express).
 
+<<<<<<< HEAD
 ### Production (Cloud Run / Render)
 The project is Docker-optimized and ready for one-click deployment.
 - **Build**: `npm run build`
@@ -61,3 +66,43 @@ The project is Docker-optimized and ready for one-click deployment.
 
 *Developed for the Google Solution Challenge / Advanced AI Prototype Submission.*  
 **Team Fusion — 2026**
+=======
+2. **Set up Environment Variables**
+   Create a `.env` file in the root directory and add your API keys:
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key
+   GOOGLE_VISION_API_KEY=your_cloud_vision_api_key
+   ```
+   *(Note: You must also configure your `window.FB_CFG` in `src/main.js` or `index.html` with your Firebase project details).*
+
+3. **Start the Full-Stack Server**
+   ```bash
+   npm run dev
+   ```
+   This will simultaneously start the secure Node.js backend (Port 3000) and the Vite frontend (Port 5173). Open `http://localhost:5173` in your browser.
+
+---
+
+## 🌐 How to Deploy (To get your Prototype Link)
+
+Because this application utilizes a secure backend to hide API keys, it is designed to be deployed effortlessly to **Render.com** or **Railway.app** as a Full-Stack Web Service.
+
+**Deployment Steps for Render.com:**
+1. Upload this entire project to a public **GitHub** repository.
+2. Go to [Render.com](https://render.com/) and create a free account.
+3. Click **New +** and select **Web Service**.
+4. Connect your GitHub account and select this repository.
+5. Configure the service:
+   - **Build Command**: `npm install && npm run build`
+   - **Start Command**: `npm start`
+6. Scroll down to **Environment Variables** and add:
+   - `GEMINI_API_KEY` (Your Gemini Key)
+   - `GOOGLE_VISION_API_KEY` (Your Cloud Vision Key)
+7. Click **Create Web Service**. 
+
+Render will build and deploy your app. Once finished, they will provide you with a live URL (e.g., `https://mediadna-ai.onrender.com`). This is your final **Prototype Link**!
+
+---
+
+*Developed for the Advanced Agentic AI Prototype Submission.*
+>>>>>>> c3e3017 (changes added)
